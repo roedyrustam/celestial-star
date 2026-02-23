@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celestial Brew | Specialty Coffee Scorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-elements">
+        <div class="stars-container" id="stars-container"></div>
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <header class="glass-header">
+        <h1>Celestial <span>Brew</span></h1>
+        <p>Evaluasi presisi untuk seduhan kopi specialty Anda</p>
+    </header>
+
+    <main class="container">
+        <section class="card glass-panel" id="input-section">
+            <h2>Parameter Seduh</h2>
+            <form id="recipe-form">
+
+                <div class="form-group">
+                    <label for="method">Metode Seduh</label>
+                    <select id="method" name="method" required>
+                        <option value="v60">V60 / Pourover</option>
+                        <option value="espresso">Espresso</option>
+                        <option value="aeropress">AeroPress</option>
+                        <option value="frenchpress">French Press</option>
+                        <option value="coldbrew">Cold Brew</option>
+                    </select>
+                </div>
+
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="coffee_dose">Dose Kopi (g)</label>
+                        <input type="number" id="coffee_dose" name="coffee_dose" step="0.1" value="15" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="water_yield">Yield Air (g)</label>
+                        <input type="number" id="water_yield" name="water_yield" step="0.1" value="250" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temperature">Suhu Air (°C)</label>
+                        <input type="number" id="temperature" name="temperature" step="0.1" value="93" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brew_time">Waktu Seduh (detik)</label>
+                        <input type="number" id="brew_time" name="brew_time" value="150" required>
+                    </div>
+                </div>
+
+                <div class="calculator-trigger" id="open-calc-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                    </svg>
+                    Kalkulator Rasio (1:X)
+                </div>
+
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="grind_size">Ukuran Gilingan</label>
+                        <select id="grind_size" name="grind_size" required>
+                            <option value="fine">Fine (Halus)</option>
+                            <option value="medium-fine" selected>Medium-Fine</option>
+                            <option value="medium">Medium</option>
+                            <option value="medium-coarse">Medium-Coarse</option>
+                            <option value="coarse">Coarse (Kasar)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="roast_level">Level Roasting</label>
+                        <select id="roast_level" name="roast_level" required>
+                            <option value="light" selected>Light Roast</option>
+                            <option value="medium">Medium Roast</option>
+                            <option value="dark">Dark Roast</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submit-btn">
+                    <span>Evaluasi Seduhan</span>
+                    <div class="loader" id="btn-loader"></div>
+                </button>
+            </form>
+        </section>
+
+        <section class="card glass-panel hidden" id="result-section">
+            <button class="btn-icon" id="back-btn" aria-label="Kembali" title="Kembali">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </button>
+
+            <div class="score-display">
+                <svg viewBox="0 0 36 36" class="circular-chart gold">
+                    <path class="circle-bg" d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="circle" stroke-dasharray="0, 100" d="M18 2.0845
+                        a 15.9155 15.9155 0 0 1 0 31.831
+                        a 15.9155 15.9155 0 0 1 0 -31.831" id="score-circle-path" />
+                    <text x="18" y="20.35" class="score-text" id="total-score-text">0</text>
+                </svg>
+                <h3>Skor Seduhan</h3>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h4>Rasio (<span id="calc-ratio"></span>)</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ratio-progress"></div>
+                    </div>
+                    <p class="ideal-text">Ideal: <span id="ideal-ratio"></span></p>
+                </div>
+                <div class="metric-card">
+                    <h4>Suhu</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="temp-progress"></div>
+                    </div>
+                    <p class="ideal-text">Ideal: <span id="ideal-temp"></span></p>
+                </div>
+                <div class="metric-card">
+                    <h4>Waktu</h4>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="time-progress"></div>
+                    </div>
+                    <p class="ideal-text">Ideal: <span id="ideal-time"></span></p>
+                </div>
+            </div>
+
+            <div class="feedback-container">
+                <h3>Prediksi Karakter Rasa</h3>
+                <div class="flavor-profile">
+                    <div class="flavor-bar">
+                        <span>Acidity</span>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="flavor-acidity"></div>
+                        </div>
+                    </div>
+                    <div class="flavor-bar">
+                        <span>Sweetness</span>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="flavor-sweetness"></div>
+                        </div>
+                    </div>
+                    <div class="flavor-bar">
+                        <span>Body</span>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="flavor-body"></div>
+                        </div>
+                    </div>
+                    <div class="flavor-bar">
+                        <span>Bitterness</span>
+                        <div class="bar-bg">
+                            <div class="bar-fill" id="flavor-bitterness"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="feedback-container">
+                <h3>Analisis & Saran</h3>
+                <ul id="feedback-list">
+                    <!-- Feedback items inserted by JS -->
+                </ul>
+            </div>
+
+            <div class="share-container">
+                <button id="copy-recipe-btn" class="btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 4v8a4 4 0 0 0 4 4h8" />
+                        <path d="M16 4h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+                        <path d="M4 16h4a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2z" />
+                    </svg>
+                    Salin Resep
+                </button>
+            </div>
+        </section>
+
+        <!-- Ratio Calculator Modal -->
+        <div class="modal hidden" id="calc-modal">
+            <!-- ... existing calc modal content ... -->
+        </div>
+
+
+        <section class="card glass-panel hidden" id="history-section">
+            <button class="btn-icon" id="history-back-btn" aria-label="Kembali" title="Kembali">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+            </button>
+            <h2>Riwayat Seduhan</h2>
+            <div id="history-container">
+                <!-- History entries inserted by JS -->
+            </div>
+            <button id="clear-history-btn" class="btn-secondary" style="margin-top: 1rem; width: 100%;">Hapus
+                Riwayat</button>
+        </section>
+    </main>
+
+    <div class="history-toggle" id="open-history-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+        </svg>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
